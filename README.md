@@ -1,4 +1,4 @@
-# Propose spectrum based fault localization formulae for Neural Network 
+# Spectrum based fault localization formulae for Neural Network 
 
 We will propose SBFL formulae for Neural Network. We refer to FASE'2019 paper [DeepFault: Fault Localization for Deep Neural Networks](https://arxiv.org/abs/1902.05974).
 
