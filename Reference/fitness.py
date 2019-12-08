@@ -74,10 +74,7 @@ def get_fitness(individual,model):
     X_val, Y_val = filter_val_set(selected_class, X_test, Y_test)
 
 
-    ####################
-    # 2)test the model and receive the indexes of correct and incorrect classifications
-    # Also provide output of each neuron in each layer for test input x.
-    filename = experiment_path + '/' + model_name + '_' + str(selected_class)
+
 
     correct_classifications, misclassifications, layer_outs, predictions =\
             test_model(model, X_val, Y_val)
@@ -117,18 +114,7 @@ def get_fitness(individual,model):
     x_perturbed = synthesize(model, x_original, suspicious_neuron_idx, step_size, distance)
     syn_end = datetime.datetime.now()
 
-    # perturbed_xs = perturbed_xs + x_perturbed
-    # perturbed_ys = perturbed_ys + y_perturbed
 
-    # reshape them into the expected format
-    # perturbed_xs = np.asarray(perturbed_xs).reshape(np.asarray(perturbed_xs).shape[0], *X_val[0].shape)
-    # perturbed_ys = np.asarray(perturbed_ys).reshape(np.asarray(perturbed_ys).shape[0], 10)
-
-    #save perturtbed inputs
-    # filename = path.join(experiment_path, experiment_name)
-    # save_perturbed_test_groups(x_perturbed, y_original, filename, group_index)
-
-    ####################
     # 5) Test if the mutated inputs are adversarial
     score = model.evaluate([x_perturbed], [y_original], verbose=0)
     return score[0]
