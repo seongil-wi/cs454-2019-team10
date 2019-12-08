@@ -1,0 +1,26 @@
+Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Model not found! Provide a pre-trained model model as input.Suspicous neurons: [(3, 12)]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [array([ 3, 12])]
+Suspicous neurons: [(1, 21)]
+Model: mnist_test_model_3_50_relu, Class: 0, Approach: random, Distance: 0.1, Score: [0.1143704205751419, 0.8999999761581421]
+Input Synthesis Time: 0:00:01.240756
+Suspicous neurons: [(3, 12)]
+Model: mnist_test_model_3_50_leaky_relu, Class: 0, Approach: random, Distance: 0.1, Score: [1.070244550704956, 0.699999988079071]
+Input Synthesis Time: 0:00:01.672461
+Suspicous neurons: [(3, 12)]
+Model: mnist_test_model_3_50_leaky_relu, Class: 0, Approach: random, Distance: 0.1, Score: [1.2882308959960938, 0.800000011920929]
+Input Synthesis Time: 0:00:01.731677
+Suspicous neurons: [(3, 12)]
+Model: mnist_test_model_3_50_leaky_relu, Class: 0, Approach: random, Distance: 0.1, Score: [1.7223730087280273, 0.800000011920929]
+Input Synthesis Time: 0:00:01.749077
+Suspicous neurons: [(3, 12)]
+Model: mnist_test_model_3_50_leaky_relu, Class: 0, Approach: random, Distance: 0.1, Score: [0.4195721745491028, 0.800000011920929]
+Input Synthesis Time: 0:00:01.589166

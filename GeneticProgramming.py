@@ -1,6 +1,6 @@
 import random,operator,math,numpy
 from deap import creator, base, tools, algorithms,gp
-
+from Reference.fitness import get_fitness
 
 def protectedDiv(left, right):
     try:
@@ -8,8 +8,12 @@ def protectedDiv(left, right):
     except ZeroDivisionError:
         return 1
 
-def getFitness(individual,points):
+def getFitness(individual,points): # I dont know what point is. And please tell me how to make function(individual) as input parameter
     func = toolbox.compile(expr=individual)
+    
+    model = "mnist_test_model_3_50_leaky_relu"  # We can choose models in DeepFault-Reference/neural_networks
+    get_fitness(individual,model)
+    
     #sqerrors = ((func(x) - x ** 4 - x ** 3 - x ** 2 - x) ** 2 for x in points)
     #return math.fsum(sqerrors) / len(points),
 
