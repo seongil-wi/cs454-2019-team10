@@ -107,9 +107,6 @@ if __name__ == "__main__":
         logfile.write("Model not found! Provide a pre-trained model as input.")
         exit(1)
 
-    experiment_name = create_experiment_dir(experiment_path, model_name,
-                                            selected_class, step_size,
-                                            approach, susp_num, repeat)
 
     #Fault localization is done per class.
     X_val, Y_val = filter_val_set(selected_class, X_test, Y_test)
@@ -118,16 +115,14 @@ if __name__ == "__main__":
     ####################
     # 2)test the model and receive the indexes of correct and incorrect classifications
     # Also provide output of each neuron in each layer for test input x.
-    filename = experiment_path + '/' + model_name + '_' + str(selected_class)
+
     try:
         correct_classifications, misclassifications = load_classifications(filename, group_index)
         layer_outs = load_layer_outs(filename, group_index)
     except:
         correct_classifications, misclassifications, layer_outs, predictions =\
                 test_model(model, X_val, Y_val)
-        save_classifications(correct_classifications, misclassifications,
-                             filename, group_index)
-        save_layer_outs(layer_outs, filename, group_index)
+
 
 
     ####################
@@ -142,8 +137,6 @@ if __name__ == "__main__":
 
 
 
-    filename = experiment_path + '/' + model_name + '_C' + str(selected_class) + '_' +\
-    approach +  '_SN' +  str(susp_num)
 
     if True:
         
@@ -210,7 +203,7 @@ if __name__ == "__main__":
 #                 suspicious_neuron_idx.append([l_idx, n_idx])
 
 
-    logfile.write('Suspicous neurons: ' + str(suspicious_neuron_idx) + '\n')
+
 
     ####################
     # 4) Run Suspiciousness-Guided Input Synthesis Algorithm
@@ -248,15 +241,8 @@ if __name__ == "__main__":
     ####################
     # 5) Test if the mutated inputs are adversarial
     score = model.evaluate([x_perturbed], [y_original], verbose=0)
-    print("this")
-    print(score)
-    logfile.write('Model: ' + model_name + ', Class: ' + str(selected_class) +
-                  ', Approach: ' + approach + ', Distance: ' +
-                  str(distance) + ', Score: ' + str(score) + '\n')
 
-    logfile.write('Input Synthesis Time: ' + str(syn_end-syn_start) + '\n')
-
-    logfile.close()
+    print(score[0])
 
 
     '''

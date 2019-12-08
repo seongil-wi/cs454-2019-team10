@@ -11,7 +11,7 @@ def protectedDiv(left, right):
 def getFitness(individual,points): # I dont know what point is. And please tell me how to make function(individual) as input parameter
     func = toolbox.compile(expr=individual)
     
-    model = "mnist_test_model_3_50_leaky_relu"  # We can choose models in DeepFault-Reference/neural_networks
+    model = "mnist_test_model_8_20_relu"  # We can choose models in DeepFault-Reference/neural_networks
     get_fitness(individual,model)
     
     #sqerrors = ((func(x) - x ** 4 - x ** 3 - x ** 2 - x) ** 2 for x in points)
