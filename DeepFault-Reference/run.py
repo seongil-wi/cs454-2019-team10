@@ -2,7 +2,6 @@
 This is the main file that executes the flow of DeepFault
 """
 from test_nn import test_model
-from lp import run_lp
 from os import path
 from spectrum_analysis import *
 from utils import save_perturbed_test_groups, load_perturbed_test_groups
@@ -78,7 +77,7 @@ if __name__ == "__main__":
     selected_class = args['class'] if not args['class'] == None else 0
     step_size      = args['step_size'] if not args['step_size'] == None else 1
     distance       = args['distance'] if not args['distance'] ==None else 0.1
-    approach       = args['approach'] if not args['approach'] == None else 'tarantula'
+    approach       = args['approach'] if not args['approach'] == None else 'random'
     susp_num       = args['suspicious_num'] if not args['suspicious_num'] == None else 1
     repeat         = args['repeat'] if not args['repeat'] == None else 1
     seed           = args['seed'] if not args['seed'] == None else random.randint(0,10)
@@ -88,7 +87,7 @@ if __name__ == "__main__":
     ####################
     # 0) Load MNIST or CIFAR10 data
     if dataset == 'mnist':
-        X_train, Y_train, X_test, Y_test = load_MNIST(one_hot=True, channel_first=False)
+        X_train, Y_train, X_test, Y_test = load_MNIST(one_hot=True)
     else:
         X_train, Y_train, X_test, Y_test = load_CIFAR()
 
@@ -105,7 +104,7 @@ if __name__ == "__main__":
     try:
         model = load_model(path.join(model_path, model_name))
     except:
-        logfile.write("Model not found! Provide a pre-trained model model as input.")
+        logfile.write("Model not found! Provide a pre-trained model as input.")
         exit(1)
 
     experiment_name = create_experiment_dir(experiment_path, model_name,
@@ -146,71 +145,69 @@ if __name__ == "__main__":
     filename = experiment_path + '/' + model_name + '_C' + str(selected_class) + '_' +\
     approach +  '_SN' +  str(susp_num)
 
-    if approach == 'tarantula':
-        try:
-            suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
-        except:
-            suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
+    if True:
+        
+        suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
                                                  num_cf, num_uf, num_cs, num_us,
                                                  susp_num)
 
-            save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
+        save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
 
-    elif approach == 'ochiai':
-        try:
-            suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
-        except:
-            suspicious_neuron_idx = ochiai_analysis(trainable_layers, scores,
-                                                 num_cf, num_uf, num_cs, num_us,
-                                                 susp_num)
-
-            save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
-
-    elif approach == 'dstar':
-        try:
-            suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
-        except:
-            suspicious_neuron_idx = dstar_analysis(trainable_layers, scores,
-                                                 num_cf, num_uf, num_cs, num_us,
-                                                 susp_num, star)
-
-            save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
-
-    elif approach == 'random':
-        # Random fault localization has to be run after running Tarantula,
-        # Ochiai and DStar with the same parameters.
-
-        filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
-        + '_tarantula_' + 'SN' + str(susp_num)
-
-        suspicious_neuron_idx_tarantula = load_suspicious_neurons(filename, group_index)
-
-        filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
-        + '_ochiai_' + 'SN' + str(susp_num)
-
-        suspicious_neuron_idx_ochiai = load_suspicious_neurons(filename, group_index)
-
-        filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
-        + '_dstar_' + 'SN' + str(susp_num)
-
-        suspicious_neuron_idx_dstar = load_suspicious_neurons(filename, group_index)
-
-        forbiddens = suspicious_neuron_idx_ochiai + suspicious_neuron_idx_tarantula  + \
-        suspicious_neuron_idx_dstar
-
-        forbiddens = [list(forb) for forb in forbiddens]
-
-        available_layers = list(([elem[0] for elem in suspicious_neuron_idx_tarantula]))
-        available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_ochiai]))
-        available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_dstar]))
-
-        suspicious_neuron_idx = []
-        while len(suspicious_neuron_idx) < susp_num:
-            l_idx = random.choice(available_layers)
-            n_idx = random.choice(range(model.layers[l_idx].output_shape[1]))
-
-            if [l_idx, n_idx] not in forbiddens and [l_idx, n_idx] not in suspicious_neuron_idx:
-                suspicious_neuron_idx.append([l_idx, n_idx])
+#     elif approach == 'ochiai':
+#         try:
+#             suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
+#         except:
+#             suspicious_neuron_idx = ochiai_analysis(trainable_layers, scores,
+#                                                  num_cf, num_uf, num_cs, num_us,
+#                                                  susp_num)
+# 
+#             save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
+# 
+#     elif approach == 'dstar':
+#         try:
+#             suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
+#         except:
+#             suspicious_neuron_idx = dstar_analysis(trainable_layers, scores,
+#                                                  num_cf, num_uf, num_cs, num_us,
+#                                                  susp_num, star)
+# 
+#             save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
+# 
+#     elif approach == 'random':
+#         # Random fault localization has to be run after running Tarantula,
+#         # Ochiai and DStar with the same parameters.
+# 
+#         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
+#         + '_tarantula_' + 'SN' + str(susp_num)
+# 
+#         suspicious_neuron_idx_tarantula = load_suspicious_neurons(filename, group_index)
+# 
+#         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
+#         + '_ochiai_' + 'SN' + str(susp_num)
+# 
+#         suspicious_neuron_idx_ochiai = load_suspicious_neurons(filename, group_index)
+# 
+#         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
+#         + '_dstar_' + 'SN' + str(susp_num)
+# 
+#         suspicious_neuron_idx_dstar = load_suspicious_neurons(filename, group_index)
+# 
+#         forbiddens = suspicious_neuron_idx_ochiai + suspicious_neuron_idx_tarantula  + \
+#         suspicious_neuron_idx_dstar
+# 
+#         forbiddens = [list(forb) for forb in forbiddens]
+# 
+#         available_layers = list(([elem[0] for elem in suspicious_neuron_idx_tarantula]))
+#         available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_ochiai]))
+#         available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_dstar]))
+# 
+#         suspicious_neuron_idx = []
+#         while len(suspicious_neuron_idx) < susp_num:
+#             l_idx = random.choice(available_layers)
+#             n_idx = random.choice(range(model.layers[l_idx].output_shape[1]))
+# 
+#             if [l_idx, n_idx] not in forbiddens and [l_idx, n_idx] not in suspicious_neuron_idx:
+#                 suspicious_neuron_idx.append([l_idx, n_idx])
 
 
     logfile.write('Suspicous neurons: ' + str(suspicious_neuron_idx) + '\n')
@@ -226,35 +223,33 @@ if __name__ == "__main__":
 
     # select 10 inputs randomly from the correct classification set.
     selected = np.random.choice(list(correct_classifications), 10)
-    zipped_data = zip(list(np.array(X_val)[selected]), list(np.array(Y_val)[selected]))
+
+    # zipped_data = zip(, )
+    x_original = list(np.array(X_val)[selected])
+    y_original = list(np.array(Y_val)[selected])
+
+    # save_original_inputs(x_original, filename, group_index)
 
     syn_start = datetime.datetime.now()
-    x_perturbed, y_perturbed, x_original = synthesize(model, zipped_data,
-                                           suspicious_neuron_idx,
-                                           correct_classifications,
-                                           step_size,
-                                           distance)
+    x_perturbed = synthesize(model, x_original, suspicious_neuron_idx, step_size, distance)
     syn_end = datetime.datetime.now()
 
-    '''
-    perturbed_xs = perturbed_xs + x_perturbed
-    perturbed_ys = perturbed_ys + y_perturbed
+    # perturbed_xs = perturbed_xs + x_perturbed
+    # perturbed_ys = perturbed_ys + y_perturbed
 
     # reshape them into the expected format
-    perturbed_xs = np.asarray(perturbed_xs).reshape(np.asarray(perturbed_xs).shape[0],
-                                     *X_val[0].shape)
-    perturbed_ys = np.asarray(perturbed_ys).reshape(np.asarray(perturbed_ys).shape[0], 10)
-    '''
+    # perturbed_xs = np.asarray(perturbed_xs).reshape(np.asarray(perturbed_xs).shape[0], *X_val[0].shape)
+    # perturbed_ys = np.asarray(perturbed_ys).reshape(np.asarray(perturbed_ys).shape[0], 10)
 
     #save perturtbed inputs
-    filename = path.join(experiment_path, experiment_name)
-    save_perturbed_test_groups(x_perturbed, y_perturbed, filename, group_index)
-    save_original_inputs(x_original, filename, group_index)
-
+    # filename = path.join(experiment_path, experiment_name)
+    # save_perturbed_test_groups(x_perturbed, y_original, filename, group_index)
 
     ####################
     # 5) Test if the mutated inputs are adversarial
-    score = model.evaluate([x_perturbed], [y_perturbed], verbose=0)
+    score = model.evaluate([x_perturbed], [y_original], verbose=0)
+    print("this")
+    print(score)
     logfile.write('Model: ' + model_name + ', Class: ' + str(selected_class) +
                   ', Approach: ' + approach + ', Distance: ' +
                   str(distance) + ', Score: ' + str(score) + '\n')
@@ -270,9 +265,7 @@ if __name__ == "__main__":
     # 6) retrain the model
     # train_model_fault_localisation(model, x_perturbed, y_perturbed, len(x_perturbed))
     model.fit(x_perturbed, y_perturbed, batch_size=32, epochs=10, verbose=1)
-
     ####################
     # 7) retest the model
     test_model(model, X_test, Y_test)
     '''
-
