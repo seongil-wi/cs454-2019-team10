@@ -1,6 +1,11 @@
-import random,operator,math,numpy
-from deap import creator, base, tools, algorithms,gp
+import numpy
+import operator
+import random
+
+from deap import creator, base, tools, algorithms, gp
+
 from Reference.fitness import get_fitness
+
 
 def protectedDiv(left, right):
     try:
@@ -12,7 +17,7 @@ def getFitness(individual,points): # I dont know what point is. And please tell 
     func = toolbox.compile(expr=individual)
     
     model = "mnist_test_model_8_20_relu"  # We can choose models in DeepFault-Reference/neural_networks
-    get_fitness(individual,model)
+    get_fitness(individual,model,func)
     
     #sqerrors = ((func(x) - x ** 4 - x ** 3 - x ** 2 - x) ** 2 for x in points)
     #return math.fsum(sqerrors) / len(points),
@@ -33,8 +38,8 @@ pset.renameArguments(ARG2='attr_n_ns')
 pset.renameArguments(ARG3='attr_n_nf')
 
 # Creator #
-creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin, pset=pset)
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMax, pset=pset)
 
 
 toolbox = base.Toolbox()
@@ -69,9 +74,9 @@ def main():
     mstats.register("max", numpy.max)
 
     pop, log = algorithms.eaSimple(pop, toolbox, 0.5, 0.1, 40, stats=mstats, halloffame=hof, verbose=True)
+    print(pop)
     # print log
     return pop, log, hof
-
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,5 @@
-from utils import normalize
-from keras import backend as K
 import numpy as np
-import random
+from keras import backend as K
 
 
 def synthesize(model, x_original, suspicious_indices, step_size, d):

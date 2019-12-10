@@ -1,33 +1,23 @@
 """
 This is the main file that executes the flow of DeepFault
 """
-from test_nn import test_model
-from os import path
-from spectrum_analysis import *
-from utils import save_perturbed_test_groups, load_perturbed_test_groups
-from utils import load_suspicious_neurons, save_suspicious_neurons
-from utils import create_experiment_dir, get_trainable_layers
-from utils import load_classifications, save_classifications
-from utils import save_layer_outs, load_layer_outs, construct_spectrum_matrices
-from utils import load_MNIST, load_CIFAR, load_model
-from utils import filter_val_set, save_original_inputs
-from input_synthesis import synthesize
-from sklearn.model_selection import train_test_split
 import datetime
-import argparse
 import random
+from os import path
 
-from keras import backend as K
-from collections import defaultdict
-import numpy as np
-from utils import get_layer_outs
-import math
+from sklearn.model_selection import train_test_split
+
+from input_synthesis import synthesize
+from run import parse_arguments
+from spectrum_analysis import *
+from test_nn import test_model
+from utils import construct_spectrum_matrices
+from utils import filter_val_set
+from utils import get_trainable_layers
+from utils import load_MNIST, load_CIFAR, load_model
 
 
-
-
-
-def get_fitness(individual,model):
+def get_fitness(individual,model,func):
     
     experiment_path = "experiment_results"
     model_path = "neural_networks"
@@ -39,6 +29,7 @@ def get_fitness(individual,model):
     selected_class = 0
     step_size      = 1
     distance       = 0.1
+    logfile_name =  "result.log"
     
     susp_num       = 1
     repeat         = 1
@@ -94,7 +85,7 @@ def get_fitness(individual,model):
         
     suspicious_neuron_idx = individual_analysis(individual,trainable_layers, scores,
                                                  num_cf, num_uf, num_cs, num_us,
-                                                 susp_num)
+                                                 susp_num,func)
 
 
 
@@ -120,7 +111,12 @@ def get_fitness(individual,model):
     return score[0]
 
 
-def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num):
+def getSuspicousnessScore(individual, num_cf, num_uf, num_cs, num_us,func):
+    score = func(num_cf,num_uf,num_cs,num_us)
+    return score
+
+
+def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num,func):
     '''
     More information on Tarantula fault localization technique can be found in
     [1]
@@ -130,7 +126,7 @@ def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num
 
     for i in range(len(scores)):
         for j in range(len(scores[i])):
-            score = individual(num_cf[i][j],num_uf[i][j],num_cs[i][j],num_us[i][j])
+            score = getSuspicousnessScore(individual,num_cf[i][j],num_uf[i][j],num_cs[i][j],num_us[i][j],func)
             if np.isnan(score):
                 score = 0
             scores[i][j] = score
@@ -153,4 +149,3 @@ def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num
                 break
 
     return suspicious_neuron_idx
-

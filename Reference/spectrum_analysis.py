@@ -1,8 +1,6 @@
-from keras import backend as K
-from collections import defaultdict
-import numpy as np
-from utils import get_layer_outs
 import math
+
+import numpy as np
 
 '''
 

@@ -1,17 +1,16 @@
 
-from keras.datasets import mnist, cifar10
-from keras.utils import np_utils
-from keras.models import model_from_json
-from keras import backend as K
 import sys
-from sklearn.metrics import classification_report, confusion_matrix
-from math import ceil
-import numpy as np
-import h5py
-from datetime import datetime
-from os import path, makedirs
 import traceback
-import math
+from math import ceil
+from os import path, makedirs
+
+import h5py
+import numpy as np
+from keras import backend as K
+from keras.datasets import mnist, cifar10
+from keras.models import model_from_json
+from keras.utils import np_utils
+from sklearn.metrics import classification_report, confusion_matrix
 
 
 def load_CIFAR(one_hot=True):

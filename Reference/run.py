@@ -1,21 +1,21 @@
 """
 This is the main file that executes the flow of DeepFault
 """
-from test_nn import test_model
-from os import path
-from spectrum_analysis import *
-from utils import save_perturbed_test_groups, load_perturbed_test_groups
-from utils import load_suspicious_neurons, save_suspicious_neurons
-from utils import create_experiment_dir, get_trainable_layers
-from utils import load_classifications, save_classifications
-from utils import save_layer_outs, load_layer_outs, construct_spectrum_matrices
-from utils import load_MNIST, load_CIFAR, load_model
-from utils import filter_val_set, save_original_inputs
-from input_synthesis import synthesize
-from sklearn.model_selection import train_test_split
-import datetime
 import argparse
+import datetime
 import random
+from os import path
+
+from sklearn.model_selection import train_test_split
+
+from input_synthesis import synthesize
+from spectrum_analysis import *
+from test_nn import test_model
+from utils import filter_val_set
+from utils import get_trainable_layers
+from utils import load_MNIST, load_CIFAR, load_model
+from utils import load_classifications
+from utils import load_layer_outs, construct_spectrum_matrices
 
 experiment_path = "experiment_results"
 model_path = "neural_networks"
@@ -115,6 +115,9 @@ if __name__ == "__main__":
     ####################
     # 2)test the model and receive the indexes of correct and incorrect classifications
     # Also provide output of each neuron in each layer for test input x.
+
+    filename = experiment_path + '/' + model_name + '_C' + str(selected_class) + '_' +\
+    approach +  '_SN' +  str(susp_num)
 
     try:
         correct_classifications, misclassifications = load_classifications(filename, group_index)

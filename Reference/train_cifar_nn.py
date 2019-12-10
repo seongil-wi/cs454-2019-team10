@@ -5,17 +5,18 @@ It gets to 75% validation accuracy in 25 epochs, and 79% after 50 epochs.
 '''
 
 from __future__ import print_function
-import keras
-from keras.datasets import cifar10
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPooling2D, LeakyReLU
+
 import os
-from sklearn.model_selection import train_test_split
-from utils import load_model, load_CIFAR
 import sys
 
+import keras
+from keras.layers import Conv2D, MaxPooling2D, LeakyReLU
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.models import Sequential
+from keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+
+from utils import load_model, load_CIFAR
 
 numlayer  = sys.argv[1]
 numhidden = sys.argv[2]

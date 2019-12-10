@@ -1,6 +1,6 @@
-from utils import calculate_prediction_metrics, get_layer_outs
-from utils import load_MNIST, load_CIFAR, load_model
 import numpy as np
+
+from utils import calculate_prediction_metrics, get_layer_outs
 
 
 def test_model(model, X_test, Y_test):
