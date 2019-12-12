@@ -108,14 +108,15 @@ def get_fitness(individual,model,func):
 
     # 5) Test if the mutated inputs are adversarial
     score = model.evaluate([x_perturbed], [y_original], verbose=0)
-    return score[0]
+   # print("score", score)
+    return score[0] / score[1]
 
 
 def getSuspicousnessScore(individual, num_cf, num_uf, num_cs, num_us,func):
-    score = func(num_cf,num_uf,num_cs,num_us)
-    return score
+    return func(num_cf,num_uf,num_cs,num_us)
 
 
+#cf = ef, uf = nf cs = ep, us = np
 def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num,func):
     '''
     More information on Tarantula fault localization technique can be found in

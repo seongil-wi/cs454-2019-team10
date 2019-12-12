@@ -58,7 +58,7 @@ def load_MNIST(one_hot=True, channel_first=True):
 def load_model(model_name):
     print(model_name)
     json_file = open(model_name + '.json', 'r')
-    print('okx')
+    #print('okx')
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
@@ -69,7 +69,7 @@ def load_model(model_name):
               optimizer='adam',
               metrics=['accuracy'])
 
-    print("Model structure loaded from ", model_name)
+    #print("Model structure loaded from ", model_name)
     return model
 
 
@@ -131,8 +131,8 @@ def calculate_prediction_metrics(Y_test, Y_pred, score):
 
 
     # Accuracy of the predicted values
-    print(classification_report(Y_test_class, Y_pred_class))
-    print(confusion_matrix(Y_test_class, Y_pred_class))
+    #print(classification_report(Y_test_class, Y_pred_class))
+    #print(confusion_matrix(Y_test_class, Y_pred_class))
 
     acc = sum([np.argmax(Y_test[i]) == np.argmax(Y_pred[i]) for i in range(len(Y_test))]) / len(Y_test)
     v1 = ceil(acc*10000)/10000
@@ -326,7 +326,7 @@ def filter_val_set(desired_class, X, Y):
             X_class.append(x)
             Y_class.append(y)
 
-    print("Validation set filtered for desired class: " + str(desired_class))
+    #print("Validation set filtered for desired class: " + str(desired_class))
 
     return np.array(X_class), np.array(Y_class)
 
@@ -360,7 +360,7 @@ def construct_spectrum_matrices(model, trainable_layers,
     num_cs = []
     num_us = []
     for tl in trainable_layers:
-        print(model.layers[tl].output_shape)
+        #print(model.layers[tl].output_shape)
         num_cf.append(np.zeros(model.layers[tl].output_shape[-1]))  # covered (activated) and failed
         num_uf.append(np.zeros(model.layers[tl].output_shape[-1]))  # uncovered (not activated) and failed
         num_cs.append(np.zeros(model.layers[tl].output_shape[-1]))  # covered and succeeded

@@ -53,7 +53,6 @@ def tarantula_analysis(trainable_layers, scores, num_cf, num_uf, num_cs, num_us,
     '''
     suspicious_neuron_idx = [[] for i in range(1, len(trainable_layers))]
 
-
     for i in range(len(scores)):
         for j in range(len(scores[i])):
             score = float(float(num_cf[i][j]) / (num_cf[i][j] + num_uf[i][j])) / (float(num_cf[i][j]) / (num_cf[i][j] + num_uf[i][j]) + float(num_cs[i][j]) / (num_cs[i][j] + num_us[i][j]))

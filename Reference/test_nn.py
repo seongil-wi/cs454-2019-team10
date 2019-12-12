@@ -13,11 +13,11 @@ def test_model(model, X_test, Y_test):
     layer_outs = get_layer_outs(model, X_test)
 
     # Print information about the model
-    print(model.summary())
+    #print(model.summary())
 
     # Evaluate the model
     score = model.evaluate(X_test, Y_test, verbose=0)
-    print('[loss, accuracy] -> ' + str(score))
+    #print('[loss, accuracy] -> ' + str(score))
 
     # Make predictions
     Y_pred = model.predict(X_test)
@@ -40,7 +40,7 @@ def test_model(model, X_test, Y_test):
         else:
             misclassifications.append(i)
 
-    print("Testing done!\n")
+    #print("Testing done!\n")
 
     return correct_classifications, misclassifications, layer_outs, predictions
 

@@ -20,11 +20,11 @@ def __save_trained_model(model, num_hidden, num_neuron,
     with open(model_filename, "w") as json_file:
         json_file.write(model_json)
 
-    print("Model saved at: " + model_filename)
+    #print("Model saved at: " + model_filename)
 
     # serialize weights to HDF5
     model.save_weights(weights_filename)
-    print("Weights saved at: " + weights_filename)
+    #print("Weights saved at: " + weights_filename)
 
     return model_name
 
@@ -64,7 +64,7 @@ def train_model():
                   metrics=['accuracy'])
 
     # Print information about the model
-    print(model.summary())
+    #print(model.summary())
 
     X_train, Y_train, X_test, Y_test = load_MNIST()
     X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train,
