@@ -84,7 +84,11 @@ def main():
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
-        print("Current Best", tools.selBest(offspring, 1)[0])
+        currentBest = tools.selBest(pop, 1)[0]
+        BestScore = currentBest.fitness.values
+        print("Current Best, Current BestScore are %s, %s", tools.selBest(offspring, 1)[0],BestScore)
+
+
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):

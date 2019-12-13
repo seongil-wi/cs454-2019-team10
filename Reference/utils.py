@@ -56,7 +56,7 @@ def load_MNIST(one_hot=True, channel_first=True):
 
 
 def load_model(model_name):
-    print(model_name)
+    #print(model_name)
     json_file = open(model_name + '.json', 'r')
     #print('okx')
     loaded_model_json = json_file.read()

@@ -15,11 +15,13 @@ from utils import construct_spectrum_matrices
 from utils import filter_val_set
 from utils import get_trainable_layers
 from utils import load_MNIST, load_CIFAR, load_model
-from keras import backend as K
+#from keras import backend as K
+import keras.backend.tensorflow_backend as K
+
 import time
 # 
 # def get_fitness(individual,model,X_val, Y_val,correct_classifications,trainable_layers,scores, num_cf, num_uf, num_cs, num_us,func):
-def get_fitness():    
+def get_fitness(individual,func):
     experiment_path = "experiment_results"
     model_path = "neural_networks"
     group_index = 1
@@ -71,19 +73,19 @@ def get_fitness():
     start_time = time.time()
 # your code
 
-#     suspicious_neuron_idx = individual_analysis(individual,trainable_layers, scores,
-#                                                  num_cf, num_uf, num_cs, num_us,
-#                                                  susp_num,func)
-    suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
+    suspicious_neuron_idx = individual_analysis(individual,trainable_layers, scores,
                                                  num_cf, num_uf, num_cs, num_us,
-                                                 susp_num)
+                                                 susp_num,func)
+#     suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
+#                                                  num_cf, num_uf, num_cs, num_us,
+#                                                  susp_num)
 
 
 
 
     print(len(suspicious_neuron_idx))
     elapsed_time = time.time() - start_time
-    print("suspicious time is ", elapsed_time)
+    #print("suspicious time is ", elapsed_time)
 
     perturbed_xs = []
     perturbed_ys = []
@@ -104,7 +106,7 @@ def get_fitness():
     x_perturbed = synthesize(model, x_original, suspicious_neuron_idx, step_size, distance)
     elapsed_time = time.time() - start_time
     
-    print("systhesize time is", elapsed_time)
+    #print("systhesize time is", elapsed_time)
     
     
     syn_end = datetime.datetime.now()
@@ -112,8 +114,8 @@ def get_fitness():
 
     # 5) Test if the mutated inputs are adversarial
     start_time = time.time()
-    with K.tf.device('/gpu:0'):
-        score = model.evaluate([x_perturbed], [y_original], verbose=0)
+    #with K.tf.device('/gpu:0'):
+    score = model.evaluate([x_perturbed], [y_original], verbose=0)
    # print("score", score)
     elapsed_time = time.time() - start_time
     print("model evaluation time is", elapsed_time)
@@ -149,14 +151,16 @@ def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num
     suspicious_neuron_idx = []
     for i in range(len(scores)):
         for j in range(len(scores[i])):
+
+            if len(suspicious_neuron_idx) == suspicious_num:
+                break
+
             if scores[i][j] in relevant_vals:
                 
                 if trainable_layers == None:
                     suspicious_neuron_idx.append((i,j))
                 else:
                     suspicious_neuron_idx.append((trainable_layers[i],j))
-            if len(suspicious_neuron_idx) == suspicious_num:
-                break
 
     return suspicious_neuron_idx
 def tarantula_analysis(trainable_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num):

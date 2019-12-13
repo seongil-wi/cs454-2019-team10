@@ -13,7 +13,7 @@ def synthesize(model, x_original, suspicious_indices, step_size, d):
     perturbed_set_x = []
     perturbed_set_y = []
     original_set_x  = []
-    print(len(x_original))
+    #print(len(x_original))
     for x in x_original:
         all_grads = []
         start_time = time.time()
@@ -26,7 +26,7 @@ def synthesize(model, x_original, suspicious_indices, step_size, d):
             _, grad_vals = iterate([np.expand_dims(x, axis=0)])
             all_grads.append(grad_vals[0])
         elapsed_time = time.time() - start_time
-        print("synthesis gradient part time is ", elapsed_time)
+        #print("synthesis gradient part time is ", elapsed_time)
         perturbed_x = x.copy()
         
         
@@ -51,7 +51,7 @@ def synthesize(model, x_original, suspicious_indices, step_size, d):
                 perturbed_x[0][i][k] = max(min(x[0][i][k] + avg_grad, 1), 0)
                 # perturbed_x.append(max(min(x[0][i][k] + avg_grad, 1), 0))
         elapsed_time = time.time() - start_time 
-        print("synthesis image pixel time is ", elapsed_time)      
+        #print("synthesis image pixel time is ", elapsed_time)
         '''
         for i in range(len(flatX)):
             sum_grad = 0
