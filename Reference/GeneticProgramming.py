@@ -1,8 +1,12 @@
 import random, operator, math, numpy
 from deap import creator, base, tools, algorithms, gp
 from fitness import get_fitness
-
-
+from utils import load_MNIST, load_CIFAR, load_model
+from os import path
+from utils import filter_val_set
+from test_nn import test_model
+from utils import construct_spectrum_matrices
+from utils import get_trainable_layers
 def protectedDiv(left, right):
     if (right == 0):
         return 1
@@ -10,13 +14,20 @@ def protectedDiv(left, right):
         return left / right
 
 
+# def getFitness(individual,m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us):
+#     func = toolbox.compile(expr=individual)
+#     #print(individual)
+#     
+#     return get_fitness(individual, m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us, func),
+
 def getFitness(individual):
     func = toolbox.compile(expr=individual)
     #print(individual)
-    model = "mnist_test_model_8_20_relu"  # We can choose models in DeepFault-Reference/neural_networks
-    return get_fitness(individual, model, func),
+    
+    return get_fitness(individual,func),
 
 
+       
 # Operator #
 pset = gp.PrimitiveSet("main", arity=4)
 pset.addPrimitive(operator.add, 2)
@@ -42,6 +53,7 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.ex
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
+# toolbox.register("evaluate", getFitness, m = model, X=X_val,Y=Y_val,c=correct_classifications,t=trainable_layers,s=scores,n_cf=num_cf,n_uf=num_uf,n_cs=num_cs,n_us=num_us)
 toolbox.register("evaluate", getFitness)
 toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("mate", gp.cxOnePoint)

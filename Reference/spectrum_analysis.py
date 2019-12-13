@@ -18,7 +18,7 @@ def individual_analysis(individual,trainable_layers, scores, num_cf, num_uf, num
     [1]
     '''
     suspicious_neuron_idx = [[] for i in range(1, len(trainable_layers))]
-
+    print("suspicious_num is",suspicious_num)
 
     for i in range(len(scores)):
         for j in range(len(scores[i])):
