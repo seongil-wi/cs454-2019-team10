@@ -1,12 +1,15 @@
 import random, operator, math, numpy
 from deap import creator, base, tools, algorithms, gp
 from fitness import get_fitness
+import csv
+
 from utils import load_MNIST, load_CIFAR, load_model
 from os import path
 from utils import filter_val_set
 from test_nn import test_model
 from utils import construct_spectrum_matrices
 from utils import get_trainable_layers
+
 def protectedDiv(left, right):
     if (right == 0):
         return 1
@@ -47,7 +50,7 @@ creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMax, pset=pset)
 
 toolbox = base.Toolbox()
-toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=4, max_=4)
+toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=2, max_=4)
 
 toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -55,18 +58,21 @@ toolbox.register("compile", gp.compile, pset=pset)
 
 # toolbox.register("evaluate", getFitness, m = model, X=X_val,Y=Y_val,c=correct_classifications,t=trainable_layers,s=scores,n_cf=num_cf,n_uf=num_uf,n_cs=num_cs,n_us=num_us)
 toolbox.register("evaluate", getFitness)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("select", tools.selTournament, tournsize=4)
 toolbox.register("mate", gp.cxOnePoint)
-toolbox.register("expr_mut", gp.genFull, min_=2, max_=2)
+toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 
 def main():
     random.seed(64)
-    pop = toolbox.population(n=40)
-    CXPB, MUTPB, NGEN = 1.0, 0.1, 40
+    pop = toolbox.population(n=10)
+    CXPB, MUTPB, NGEN = 1.0, 0.1, 10
 
     print("Start of evolution")
+
+    f = open("output.csv", 'w')
+    wr = csv.writer(f)
 
     # Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
@@ -88,9 +94,9 @@ def main():
         BestScore = currentBest.fitness.values
         print("Current Best, Current BestScore are %s, %s", tools.selBest(offspring, 1)[0],BestScore)
 
+        wr.writerow(tools.selBest(pop, 1)[0])
+        wr.writerow(BestScore)
 
-
-        # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
 
             # cross two individuals with probability CXPB
