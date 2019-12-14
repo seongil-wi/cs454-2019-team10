@@ -2,13 +2,15 @@ import random, operator, math, numpy
 from deap import creator, base, tools, algorithms, gp
 from fitness import get_fitness
 import csv
-
+import numpy as np
 from utils import load_MNIST, load_CIFAR, load_model
 from os import path
 from utils import filter_val_set
 from test_nn import test_model
 from utils import construct_spectrum_matrices
 from utils import get_trainable_layers
+import argparse
+
 
 def protectedDiv(left, right):
     if (right == 0):
@@ -17,20 +19,51 @@ def protectedDiv(left, right):
         return left / right
 
 
-# def getFitness(individual,m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us):
+def getFitness(individual,m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us,sel,susp):
+    func = toolbox.compile(expr=individual)
+    #print(individual)
+     
+    return get_fitness(individual, m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us,sel, susp,func),
+
+# def getFitness(individual):
 #     func = toolbox.compile(expr=individual)
 #     #print(individual)
 #     
-#     return get_fitness(individual, m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us, func),
+#     return get_fitness(individual,func),
 
-def getFitness(individual):
-    func = toolbox.compile(expr=individual)
-    #print(individual)
-    
-    return get_fitness(individual,func),
+text = 'Spectrum Based Fault Localization for Deep Neural Networks'
+parser = argparse.ArgumentParser(description=text)
+
+# add new command-line arguments
+parser.add_argument("--num_suspicious",  help="number of suspicious neuron",
+                    required=True)
+parser.add_argument("--model",    help="The model to be loaded. The \
+                    specified model will be analyzed.", required=True)
 
 
-       
+# parse command-line arguments
+args = parser.parse_args()
+
+
+
+
+
+selected_class = 0
+model_path = "neural_networks"
+model_name = vars(args)['model']
+model = load_model(path.join(model_path, model_name))
+X_train, Y_train, X_test, Y_test = load_MNIST(one_hot=True)
+X_val, Y_val = filter_val_set(selected_class, X_test, Y_test)
+correct_classifications, misclassifications, layer_outs, predictions = \
+    test_model(model, X_val, Y_val)
+trainable_layers = get_trainable_layers(model)
+scores, num_cf, num_uf, num_cs, num_us = construct_spectrum_matrices(model,
+                                                                     trainable_layers,
+                                                                     correct_classifications,
+                                                                     misclassifications,
+                                                                     layer_outs)
+
+selected = np.random.choice(list(correct_classifications), 20)
 # Operator #
 pset = gp.PrimitiveSet("main", arity=4)
 pset.addPrimitive(operator.add, 2)
@@ -56,8 +89,8 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.ex
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
-# toolbox.register("evaluate", getFitness, m = model, X=X_val,Y=Y_val,c=correct_classifications,t=trainable_layers,s=scores,n_cf=num_cf,n_uf=num_uf,n_cs=num_cs,n_us=num_us)
-toolbox.register("evaluate", getFitness)
+toolbox.register("evaluate", getFitness, m = model, X=X_val,Y=Y_val,c=correct_classifications,t=trainable_layers,s=scores,n_cf=num_cf,n_uf=num_uf,n_cs=num_cs,n_us=num_us,sel=selected,susp=vars(args)['num_suspicious'])
+# toolbox.register("evaluate", getFitness)
 toolbox.register("select", tools.selTournament, tournsize=4)
 toolbox.register("mate", gp.cxOnePoint)
 toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
@@ -66,8 +99,8 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 def main():
     random.seed(64)
-    pop = toolbox.population(n=10)
-    CXPB, MUTPB, NGEN = 1.0, 0.1, 10
+    pop = toolbox.population(n=30)
+    CXPB, MUTPB, NGEN = 0.9, 0.1, 15
 
     print("Start of evolution")
 
