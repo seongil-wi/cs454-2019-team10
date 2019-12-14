@@ -12,4 +12,13 @@ The study used fixed novel formuleas such as Tarantula and Ochiai, but we are ac
 
 We will propose the formuleas by Genetic algorithm.
 
+## Usage
 
+Version: Python 3.6, Keras (v2.2.2) with Tensorflow(v1.10.1), deap(v1.3)
+
+Test Model: mnist_test_model_8_20_relu, mnist_test_model_5_30_relu, mnist_test_model_3_50_relu
+Test the number of suspicious neuron: 1, 2, 3, 4
+
+GeneticProgramming.py --model [Model] -num_suspicious [the number of suspicious neuron]
+
+For example, GeneticProgramming.py --model mnist_test_model_8_20_relu --num_suspicious 1
