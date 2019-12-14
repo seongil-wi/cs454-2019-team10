@@ -18,13 +18,13 @@ from utils import load_MNIST, load_CIFAR, load_model
 # from keras import backend as K
 import keras.backend.tensorflow_backend as K
 from sklearn.preprocessing import MinMaxScaler
-
+import numpy as np
 import time
 
 
 #
-# def get_fitness(individual,model,X_val, Y_val,correct_classifications,trainable_layers,scores, num_cf, num_uf, num_cs, num_us,func):
-def get_fitness(individual, func):
+def get_fitness(individual,model,X_val, Y_val,correct_classifications,trainable_layers,scores, num_cf, num_uf, num_cs, num_us,selected,susp_num,func):
+# def get_fitness(individual, func):
     experiment_path = "experiment_results"
     model_path = "neural_networks"
     group_index = 1
@@ -34,28 +34,28 @@ def get_fitness(individual, func):
     step_size = 1
     distance = 0.1
 
-    susp_num = 1
+
     repeat = 1
     seed = random.randint(0, 10)
     star = 3
-
+    susp_num = int(susp_num)
     ####################
     # 0) Load MNIST or CIFAR10 data
 
-    selected_class = 0
-    model_path = "neural_networks"
-    model_name = "mnist_test_model_8_20_relu"
-    model = load_model(path.join(model_path, model_name))
-    X_train, Y_train, X_test, Y_test = load_MNIST(one_hot=True)
-    X_val, Y_val = filter_val_set(selected_class, X_test, Y_test)
-    correct_classifications, misclassifications, layer_outs, predictions = \
-        test_model(model, X_val, Y_val)
-    trainable_layers = get_trainable_layers(model)
-    scores, num_cf, num_uf, num_cs, num_us = construct_spectrum_matrices(model,
-                                                                         trainable_layers,
-                                                                         correct_classifications,
-                                                                         misclassifications,
-                                                                         layer_outs)
+#     selected_class = 0
+#     model_path = "neural_networks"
+#     model_name = "mnist_test_model_8_20_relu"
+#     model = load_model(path.join(model_path, model_name))
+#     X_train, Y_train, X_test, Y_test = load_MNIST(one_hot=True)
+#     X_val, Y_val = filter_val_set(selected_class, X_test, Y_test)
+#     correct_classifications, misclassifications, layer_outs, predictions = \
+#         test_model(model, X_val, Y_val)
+#     trainable_layers = get_trainable_layers(model)
+#     scores, num_cf, num_uf, num_cs, num_us = construct_spectrum_matrices(model,
+#                                                                          trainable_layers,
+#                                                                          correct_classifications,
+#                                                                          misclassifications,
+#                                                                          layer_outs)
 
     ####################
     # 1) Load the pretrained network.
@@ -69,10 +69,11 @@ def get_fitness(individual, func):
 
     start_time = time.time()
     # your code
-
+# 
     suspicious_neuron_idx = individual_analysis(individual, trainable_layers, scores,
                                                 num_cf, num_uf, num_cs, num_us,
                                                 susp_num, func)
+#     suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores, num_cf, num_uf, num_cs, num_us, susp_num)
     # suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
     #                                              num_cf, num_uf, num_cs, num_us,
     #                                              susp_num)
@@ -85,7 +86,7 @@ def get_fitness(individual, func):
     perturbed_ys = []
 
     # select 10 inputs randomly from the correct classification set.
-    selected = np.random.choice(list(correct_classifications), 10)
+#     selected = np.random.choice(list(correct_classifications), 10)
 
     # zipped_data = zip(, )
     x_original = list(np.array(X_val)[selected])
@@ -201,6 +202,66 @@ def tarantula_analysis(trainable_layers, scores, num_cf, num_uf, num_cs, num_us,
 
     return suspicious_neuron_idx
 
+def ochiai_analysis(available_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num):
+    '''
+    More information on Ochiai fault localization technique can be found in
+    [2]
+    '''
+
+    suspicious_neuron_idx = [[] for i in range(1, len(available_layers))]
+
+    for i in range(len(scores)):
+        for j in range(len(scores[i])):
+            score = float(num_cf[i][j]) / ((num_cf[i][j] + num_uf[i][j]) * (num_cf[i][j] + num_cs[i][j])) **(.5)
+            scores[i][j] = score
+
+    flat_scores = [float(item) for sublist in scores for item in sublist if not
+               math.isnan(float(item))]
+
+    relevant_vals = sorted(flat_scores, reverse=True)[:suspicious_num]
+
+    suspicious_neuron_idx = []
+    for i in range(len(scores)):
+        for j in range(len(scores[i])):
+            if scores[i][j] in relevant_vals:
+                if available_layers == None:
+                    suspicious_neuron_idx.append((i,j))
+                else:
+                    suspicious_neuron_idx.append((available_layers[i],j))
+            if len(suspicious_neuron_idx) == suspicious_num:
+                break
+
+    return suspicious_neuron_idx
+
+
+def dstar_analysis(available_layers, scores, num_cf, num_uf, num_cs, num_us, suspicious_num, star):
+    '''
+    More information on DStar fault localization technique can be found in
+    [3]
+    '''
+
+    for i in range(len(scores)):
+        for j in range(len(scores[i])):
+            score = float(num_cf[i][j]**star) / (num_cs[i][j] + num_uf[i][j])
+            scores[i][j] = score
+
+    flat_scores = [float(item) for sublist in scores for item in sublist if not
+               math.isnan(float(item))]
+
+    relevant_vals = sorted(flat_scores, reverse=True)[:suspicious_num]
+
+    suspicious_neuron_idx = []
+    for i in range(len(scores)):
+        for j in range(len(scores[i])):
+            if scores[i][j] in relevant_vals:
+                if available_layers == None:
+                    suspicious_neuron_idx.append((i,j))
+                else:
+                    suspicious_neuron_idx.append((available_layers[i],j))
+            if len(suspicious_neuron_idx) == suspicious_num:
+                break
+
+    return suspicious_neuron_idx
 
 if __name__ == "__main__":
     for i in range(10):
