@@ -19,34 +19,30 @@ def protectedDiv(left, right):
         return left / right
 
 
-def getFitness(individual,m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us,sel,susp):
+def getFitness(individual, m, X, Y, c, t, s, n_cf, n_uf, n_cs, n_us, sel, susp):
     func = toolbox.compile(expr=individual)
-    #print(individual)
-     
-    return get_fitness(individual, m,X,Y,c,t,s,n_cf,n_uf,n_cs,n_us,sel, susp,func),
+    # print(individual)
+
+    return get_fitness(individual, m, X, Y, c, t, s, n_cf, n_uf, n_cs, n_us, sel, susp, func),
+
 
 # def getFitness(individual):
 #     func = toolbox.compile(expr=individual)
 #     #print(individual)
-#     
+#
 #     return get_fitness(individual,func),
 
 text = 'Spectrum Based Fault Localization for Deep Neural Networks'
 parser = argparse.ArgumentParser(description=text)
 
 # add new command-line arguments
-parser.add_argument("--num_suspicious",  help="number of suspicious neuron",
+parser.add_argument("--num_suspicious", help="number of suspicious neuron",
                     required=True)
-parser.add_argument("--model",    help="The model to be loaded. The \
+parser.add_argument("--model", help="The model to be loaded. The \
                     specified model will be analyzed.", required=True)
-
 
 # parse command-line arguments
 args = parser.parse_args()
-
-
-
-
 
 selected_class = 0
 model_path = "neural_networks"
@@ -89,7 +85,9 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.ex
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=pset)
 
-toolbox.register("evaluate", getFitness, m = model, X=X_val,Y=Y_val,c=correct_classifications,t=trainable_layers,s=scores,n_cf=num_cf,n_uf=num_uf,n_cs=num_cs,n_us=num_us,sel=selected,susp=vars(args)['num_suspicious'])
+toolbox.register("evaluate", getFitness, m=model, X=X_val, Y=Y_val, c=correct_classifications, t=trainable_layers,
+                 s=scores, n_cf=num_cf, n_uf=num_uf, n_cs=num_cs, n_us=num_us, sel=selected,
+                 susp=vars(args)['num_suspicious'])
 # toolbox.register("evaluate", getFitness)
 toolbox.register("select", tools.selTournament, tournsize=4)
 toolbox.register("mate", gp.cxOnePoint)
@@ -118,14 +116,16 @@ def main():
     for g in range(NGEN):
         print("-- Generation %i --" % g)
 
+        currentBest = tools.selBest(pop, 1)[0]
+        BestScore = currentBest.fitness.values
+        print("Current Best, Current BestScore are %s, %s", currentBest, BestScore)
+
+
         # Select the next generation individuals
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
-        currentBest = tools.selBest(pop, 1)[0]
-        BestScore = currentBest.fitness.values
-        print("Current Best, Current BestScore are %s, %s", tools.selBest(offspring, 1)[0],BestScore)
 
         wr.writerow(tools.selBest(pop, 1)[0])
         wr.writerow(BestScore)
@@ -176,7 +176,6 @@ def main():
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-
 
 
 if __name__ == "__main__":
