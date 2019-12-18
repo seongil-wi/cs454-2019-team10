@@ -142,12 +142,12 @@ if __name__ == "__main__":
 
 
     if True:
-        
+
         suspicious_neuron_idx = tarantula_analysis(trainable_layers, scores,
                                                  num_cf, num_uf, num_cs, num_us,
                                                  susp_num)
 
-        
+
 
 #     elif approach == 'ochiai':
 #         try:
@@ -156,9 +156,9 @@ if __name__ == "__main__":
 #             suspicious_neuron_idx = ochiai_analysis(trainable_layers, scores,
 #                                                  num_cf, num_uf, num_cs, num_us,
 #                                                  susp_num)
-# 
+#
 #             save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
-# 
+#
 #     elif approach == 'dstar':
 #         try:
 #             suspicious_neuron_idx = load_suspicious_neurons(filename, group_index)
@@ -166,42 +166,42 @@ if __name__ == "__main__":
 #             suspicious_neuron_idx = dstar_analysis(trainable_layers, scores,
 #                                                  num_cf, num_uf, num_cs, num_us,
 #                                                  susp_num, star)
-# 
+#
 #             save_suspicious_neurons(suspicious_neuron_idx, filename, group_index)
-# 
+#
 #     elif approach == 'random':
 #         # Random fault localization has to be run after running Tarantula,
 #         # Ochiai and DStar with the same parameters.
-# 
+#
 #         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
 #         + '_tarantula_' + 'SN' + str(susp_num)
-# 
+#
 #         suspicious_neuron_idx_tarantula = load_suspicious_neurons(filename, group_index)
-# 
+#
 #         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
 #         + '_ochiai_' + 'SN' + str(susp_num)
-# 
+#
 #         suspicious_neuron_idx_ochiai = load_suspicious_neurons(filename, group_index)
-# 
+#
 #         filename = experiment_path + '/' + model_name + '_C' + str(selected_class) \
 #         + '_dstar_' + 'SN' + str(susp_num)
-# 
+#
 #         suspicious_neuron_idx_dstar = load_suspicious_neurons(filename, group_index)
-# 
+#
 #         forbiddens = suspicious_neuron_idx_ochiai + suspicious_neuron_idx_tarantula  + \
 #         suspicious_neuron_idx_dstar
-# 
+#
 #         forbiddens = [list(forb) for forb in forbiddens]
-# 
+#
 #         available_layers = list(([elem[0] for elem in suspicious_neuron_idx_tarantula]))
 #         available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_ochiai]))
 #         available_layers += list(set([elem[0] for elem in suspicious_neuron_idx_dstar]))
-# 
+#
 #         suspicious_neuron_idx = []
 #         while len(suspicious_neuron_idx) < susp_num:
 #             l_idx = random.choice(available_layers)
 #             n_idx = random.choice(range(model.layers[l_idx].output_shape[1]))
-# 
+#
 #             if [l_idx, n_idx] not in forbiddens and [l_idx, n_idx] not in suspicious_neuron_idx:
 #                 suspicious_neuron_idx.append([l_idx, n_idx])
 
@@ -218,8 +218,9 @@ if __name__ == "__main__":
     perturbed_ys = []
 
     # select 10 inputs randomly from the correct classification set.
-    selected = np.random.choice(list(correct_classifications), 10)
-
+    #selected = np.random.choice(list(correct_classifications), 10)
+    a = np.array(correct_classifications)
+    selected = a[:10]
     # zipped_data = zip(, )
     x_original = list(np.array(X_val)[selected])
     y_original = list(np.array(Y_val)[selected])
@@ -245,6 +246,7 @@ if __name__ == "__main__":
     # 5) Test if the mutated inputs are adversarial
     score = model.evaluate([x_perturbed], [y_original], verbose=0)
 
+    print(x_perturbed)
     print(score[0])
 
 

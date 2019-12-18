@@ -98,7 +98,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 def main():
     random.seed(64)
     pop = toolbox.population(n=30)
-    CXPB, MUTPB, NGEN = 0.9, 0.1, 15
+    CXPB, MUTPB, NGEN = 0.9, 0.1, 1
 
     print("Start of evolution")
 
