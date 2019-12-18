@@ -10,6 +10,7 @@ from test_nn import test_model
 from utils import construct_spectrum_matrices
 from utils import get_trainable_layers
 import argparse
+from tqdm import tqdm
 
 
 def protectedDiv(left, right):
@@ -98,7 +99,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 def main():
     random.seed(64)
     pop = toolbox.population(n=30)
-    CXPB, MUTPB, NGEN = 0.9, 0.1, 1
+    CXPB, MUTPB, NGEN = 0.9, 0.1, 15
 
     print("Start of evolution")
 
@@ -107,7 +108,7 @@ def main():
 
     # Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
-    for ind, fit in zip(pop, fitnesses):
+    for ind, fit in tqdm(zip(pop, fitnesses), desc = "evalute the entire population"):
         ind.fitness.values = fit
 
     print("  Evaluated %i individuals" % len(pop))
@@ -141,7 +142,7 @@ def main():
                 del child1.fitness.values
                 del child2.fitness.values
 
-        for mutant in offspring:
+        for mutant in tqdm(offspring, desc="mutating..."):
 
             # mutate an individual with probability MUTPB
             if random.random() < MUTPB:
@@ -158,19 +159,6 @@ def main():
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring
-
-        # # Gather all the fitnesses in one list and print the stats
-        # fits = [ind.fitness.values[0] for ind in pop]
-        #
-        # length = len(pop)
-        # mean = sum(fits) / length
-        # sum2 = sum(x * x for x in fits)
-        # std = abs(sum2 / length - mean ** 2) ** 0.5
-        #
-        # print("  Min %s" % min(fits))
-        # print("  Max %s" % max(fits))
-        # print("  Avg %s" % mean)
-        # print("  Std %s" % std)
 
     print("-- End of (successful) evolution --")
 

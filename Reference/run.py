@@ -247,6 +247,20 @@ if __name__ == "__main__":
     score = model.evaluate([x_perturbed], [y_original], verbose=0)
 
     print(x_perturbed)
+
+    fig = plt.figure()
+    rows = 2
+    cols = 5
+
+    for i in range(1, 11):
+        image = np.reshape(x_pertubed[i-1][:][:], [28,28])
+        ax = fig.add_subplot(rows, cols, i)
+        ax.imshow(image, cmap='Greys')
+        ax.set_xlabel(str(y_original[i-1]))
+        ax.set_xticks([]), ax.set_yticks([])
+    plt.show()
+
+
     print(score[0])
 
 

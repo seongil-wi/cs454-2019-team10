@@ -4,7 +4,7 @@ import matplotlib as mpl
 import matplotlib.pylab as plt
 from keras import backend as K
 import time
-from tqdm import tqdm
+
 
 
 
@@ -18,7 +18,8 @@ def synthesize(model, x_original, suspicious_indices, step_size, d):
     perturbed_set_y = []
     original_set_x  = []
     #print(len(x_original))
-    for x in tqdm(x_original, desc="sythesize images..."):
+    q = 0
+    for x in x_original:
         all_grads = []
         start_time = time.time()
 
@@ -73,9 +74,8 @@ def synthesize(model, x_original, suspicious_indices, step_size, d):
         perturbed_set_x.append(perturbed_x)
         # perturbed_set_y.append(y)
         # original_set_x.append(x)
-        print(np.shape(perturbed_set_x[0]))
-
-        img = Image.fromarray(np.transpose(perturbed_set_x[0], (1,2,0)), 'F')
-        img.show()
+        
+        #img = Image.fromarray(perturbed_set_x[0][0], 'F')
+        #img.show()
         #plt.savefig(np.array(perturbed_set_x[0]))
     return perturbed_set_x
