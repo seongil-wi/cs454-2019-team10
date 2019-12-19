@@ -60,7 +60,8 @@ scores, num_cf, num_uf, num_cs, num_us = construct_spectrum_matrices(model,
                                                                      misclassifications,
                                                                      layer_outs)
 
-selected = np.random.choice(list(correct_classifications), 20)
+a = np.array(correct_classifications)
+selected = a[:10]
 # Operator #
 pset = gp.PrimitiveSet("main", arity=4)
 pset.addPrimitive(operator.add, 2)
@@ -99,7 +100,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 def main():
     random.seed(64)
     pop = toolbox.population(n=30)
-    CXPB, MUTPB, NGEN = 0.9, 0.1, 15
+    CXPB, MUTPB, NGEN = 0.9, 0.1, 1
 
     print("Start of evolution")
 
@@ -161,6 +162,21 @@ def main():
         pop[:] = offspring
 
     print("-- End of (successful) evolution --")
+
+    x_perturbed = list(np.array(X_val)[selected])
+    y_original = list(np.array(Y_val)[selected])
+
+    fig = plt.figure()
+    rows = 2
+    cols = 5
+
+    for i in range(1, 11):
+        image = np.reshape(x_perturbed[i-1][:][:], [28,28])
+        ax = fig.add_subplot(rows, cols, i)
+        ax.imshow(image, cmap='Greys')
+        ax.set_xlabel(str(what_number(y_original[i-1])))
+        ax.set_xticks([]), ax.set_yticks([])
+    plt.show()
 
     best_ind = tools.selBest(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
