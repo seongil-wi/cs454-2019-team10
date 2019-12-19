@@ -17,10 +17,19 @@ from utils import load_MNIST, load_CIFAR, load_model
 from utils import load_classifications
 from utils import load_layer_outs, construct_spectrum_matrices
 
+import PIL.Image as Image
+import matplotlib as mpl
+import matplotlib.pylab as plt
+
 experiment_path = "experiment_results"
 model_path = "neural_networks"
 group_index = 1
 __version__ = "v1.0"
+
+def what_number(y_):
+    for i in range(len(y_)):
+        if y_[i] == 1:
+            return i
 
 def parse_arguments():
     """
@@ -253,10 +262,10 @@ if __name__ == "__main__":
     cols = 5
 
     for i in range(1, 11):
-        image = np.reshape(x_pertubed[i-1][:][:], [28,28])
+        image = np.reshape(x_perturbed[i-1][:][:], [28,28])
         ax = fig.add_subplot(rows, cols, i)
         ax.imshow(image, cmap='Greys')
-        ax.set_xlabel(str(y_original[i-1]))
+        ax.set_xlabel(str(what_number(y_original[i-1])))
         ax.set_xticks([]), ax.set_yticks([])
     plt.show()
 
