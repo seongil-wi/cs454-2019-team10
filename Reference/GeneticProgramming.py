@@ -11,7 +11,15 @@ from utils import construct_spectrum_matrices
 from utils import get_trainable_layers
 import argparse
 from tqdm import tqdm
+import PIL.Image as Image
+import matplotlib as mpl
+import matplotlib.pylab as plt
 
+
+def what_number(y_):
+    for i in range(len(y_)):
+        if y_[i] == 1:
+            return i
 
 def protectedDiv(left, right):
     if (right == 0):
